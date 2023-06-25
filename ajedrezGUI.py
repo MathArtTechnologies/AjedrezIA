@@ -59,6 +59,20 @@ class GameState:
                                 if x < 7 and self.Board[y-1][x+1][0] == 'b':
                                     movimientos.append(Move((x,y), (x+1,y-1), self.Board))
                                 
+                        if color == 'b' and not self.whiteToMove:
+                            if y == 7:
+                                pass
+
+                            else:
+                                if self.Board[y+1][x] == '++':
+                                    movimientos.append(Move((x,y), (x,y+1), self.Board))
+                                if y == 1 and self.Board[y+2][x] == '++':
+                                    movimientos.append(Move((x,y), (x,y+2), self.Board))
+                                if x > 0 and self.Board[y+1][x-1][0] == 'w':
+                                    movimientos.append(Move((x,y), (x+1,y+1), self.Board))
+                                if x < 7 and self.Board[y+1][x+1][0] == 'w':
+                                    movimientos.append(Move((x,y), (x+1,y+1), self.Board))
+
                     elif pieza == 'R':
                         directions = ((1,0), (0,-1), (-1,0), (0,1))
 
@@ -70,14 +84,6 @@ class GameState:
                             diferencia_y = y + 1 if direction[1] == -1 else fil-y
 
                             diferencia = abs(diferencia_x * direction[0] + diferencia_y *direction[1]) 
-
-                            # print("diferencia x: ", diferencia_x)                            
-                            # print("diferencia x: ", diferencia_y)
-
-
-                            # min_dif = min(diferencia_x, diferencia_y)
-                            # print("minimo: ", min_dif)
-
 
                             for i in range(diferencia-1):
                                 mov_x += direction[0]
@@ -91,66 +97,6 @@ class GameState:
                                         break
                                 
                                 movimientos.append(Move((x,y), (mov_x, mov_y), self.Board))
-
-
-                        # if color == 'w' and self.whiteToMove:
-                        #     for i in range(col - x+1):
-                        #         if self.Board[y][x+i][0] == 'w':
-                        #             break
-                        #         elif self.Board[y][x+i][0] == 'b':
-                        #             movimientos.append(Move((x,y), (x+i, y), self.Board))
-                        #             break
-                        #         movimientos.append(Move((x,y), (x+i,y), self.Board))
-                        #     for i in range(x+1):
-                        #         if self.Board[y][x-i][0] == 'w':
-                        #             break
-                        #         elif self.Board[y][x-i][0] == 'b':
-                        #             movimientos.append(Move((x,y), (x-i, y), self.Board))
-                        #             break
-                        #         movimientos.append(Move((x,y), (x-i,y), self.Board))
-                        #     for i in range(fil - y+1):
-                        #         if self.Board[y+i][x][0] == 'w':
-                        #             break
-                        #         elif self.Board[y+i][x][0] == 'b':
-                        #             movimientos.append(Move((x,y), (x+i, y), self.Board))
-                        #             break
-                        #         movimientos.append(Move((x,y), (x,y+i), self.Board))
-                        #     for i in range(y+1):
-                        #         if self.Board[y-i][x][0] == 'w':
-                        #             break
-                        #         elif self.Board[y-i][x][0] == 'b':
-                        #             movimientos.append(Move((x,y), (x, y-i), self.Board))
-                        #             break
-                        #         movimientos.append(Move((x,y), (x,y-i), self.Board))
-                        # elif color == 'b' and not self.whiteToMove:
-                        #     for i in range(col - x):
-                        #         if self.Board[y][x+i][0] == 'b':
-                        #             break
-                        #         elif self.Board[y][x+i][0] == 'w':
-                        #             movimientos.append(Move((x,y), (x+i, y), self.Board))
-                        #             break
-                        #         movimientos.append(Move((x,y), (x+i,y), self.Board))
-                        #     for i in range(x+1):
-                        #         if self.Board[y][x-i][0] == 'b':
-                        #             break
-                        #         elif self.Board[y][x-i][0] == 'w':
-                        #             movimientos.append(Move((x,y), (x-i, y), self.Board))
-                        #             break
-                        #         movimientos.append(Move((x,y), (x-i,y), self.Board))
-                        #     for i in range(fil - y):
-                        #         if self.Board[y+i][x][0] == 'b':
-                        #             break
-                        #         elif self.Board[y+i][x][0] == 'w':
-                        #             movimientos.append(Move((x,y), (x+i, y), self.Board))
-                        #             break
-                        #         movimientos.append(Move((x,y), (x,y+i), self.Board))
-                        #     for i in range(y+1):
-                        #         if self.Board[y-i][x][0] == 'b':
-                        #             break
-                        #         elif self.Board[y-i][x][0] == 'w':
-                        #             movimientos.append(Move((x,y), (x, y-i), self.Board))
-                        #             break
-                        #         movimientos.append(Move((x,y), (x,y-i), self.Board))
                         
                     elif pieza == 'N':   
                         if color == 'w' and self.whiteToMove:
@@ -206,128 +152,35 @@ class GameState:
                                 movimientos.append(Move((x,y), (mov_x, mov_y), self.Board))
                     
                     elif pieza == 'Q':
-                        if color == 'w' and self.whiteToMove:
-                            for i in range(col - x):
-                                if self.Board[y][x+i][0] == 'w':
-                                    break
-                                elif self.Board[y][x+i][0] == 'b':
-                                    movimientos.append(Move((x,y), (x+i, y), self.Board))
-                                    break
-                                movimientos.append(Move((x,y), (x+i,y), self.Board))
-                            for i in range(x+1):
-                                if self.Board[y][x-i][0] == 'w':
-                                    break
-                                elif self.Board[y][x-i][0] == 'b':
-                                    movimientos.append(Move((x,y), (x-i, y), self.Board))
-                                    break
-                                movimientos.append(Move((x,y), (x-i,y), self.Board))
-                            for i in range(fil - y):
-                                if self.Board[y+i][x][0] == 'w':
-                                    break
-                                elif self.Board[y+i][x][0] == 'b':
-                                    movimientos.append(Move((x,y), (x+i, y), self.Board))
-                                    break
-                                movimientos.append(Move((x,y), (x,y+i), self.Board))
-                            for i in range(y+1):
-                                if self.Board[y-i][x][0] == 'w':
-                                    break
-                                elif self.Board[y-i][x][0] == 'b':
-                                    movimientos.append(Move((x,y), (x, y-i), self.Board))
-                                    break
-                                movimientos.append(Move((x,y), (x,y-i), self.Board))
-                            for i in range(col-x):
-                                for j in range(y+1):
-                                    if self.Board[y-j][x+i][0] == 'w':
+                        directions = ((1,0), (0,-1), (-1,0), (0,1), (1,1), (1,-1), (-1,-1), (-1,1))
+
+                        for direction in directions:
+                            mov_x = x;
+                            mov_y = y;
+                            
+                            diferencia = 0
+                            if(abs(direction[0] + direction[1]) == 1):
+                                diferencia_x = x + 1 if direction[0] == -1 else col-x 
+                                diferencia_y = y + 1 if direction[1] == -1 else fil-y
+                                diferencia = abs(diferencia_x * direction[0] + diferencia_y *direction[1]) 
+                            else:
+                                diferencia_x = x + 1 if direction[0] == -1 else col-x 
+                                diferencia_y = y + 1 if direction[1] == -1 else fil-y
+                                diferencia = min(diferencia_x, diferencia_y)
+
+
+                            for i in range(diferencia-1):
+                                mov_x += direction[0]
+                                mov_y += direction[1]
+
+                                if self.Board[mov_y][mov_x] != '++':
+                                    if self.Board[mov_y][mov_x][0] != color:
+                                        movimientos.append(Move((x,y), (mov_x, mov_y), self.Board))
                                         break
-                                    elif self.Board[y-j][x+i][0] == 'b':
-                                        movimientos.append(Move((x,y), (x+i, y-j), self.Board))
+                                    else:
                                         break
-                                    movimientos.append(Move((x,y), (x+i, y-j), self.Board))
-                            for i in range(col-x):
-                                for j in range(fil-y):
-                                    if self.Board[y+j][x+i][0] == 'w':
-                                        break
-                                    elif self.Board[y+j][x+i][0] == 'b':
-                                        movimientos.append(Move((x,y), (x+i, y+j), self.Board))
-                                        break
-                                    movimientos.append(Move((x,y), (x+i, y+j), self.Board))
-                            for i in range(x+1):
-                                for j in range(y+1):
-                                    if self.Board[y+j][x-i][0] == 'w':
-                                        break
-                                    elif self.Board[y+j][x-i][0] == 'b':
-                                        movimientos.append(Move((x,y), (x-i, y+j), self.Board))
-                                        break
-                                    movimientos.append(Move((x,y), (x-i, y+j), self.Board))
-                            for i in range(x+1):
-                                for j in range(fil-y):
-                                    if self.Board[y-j][x-i][0] == 'w':
-                                        break
-                                    elif self.Board[y-j][x-i][0] == 'b':
-                                        movimientos.append(Move((x,y), (x-i, y-j), self.Board))
-                                        break
-                                    movimientos.append(Move((x,y), (x-i, y-j), self.Board))
-                        elif color == 'b' and not self.whiteToMove:
-                            for i in range(col - x):
-                                if self.Board[y][x+i][0] == 'b':
-                                    break
-                                elif self.Board[y][x+i][0] == 'w':
-                                    movimientos.append(Move((x,y), (x+i, y), self.Board))
-                                    break
-                                movimientos.append(Move((x,y), (x+i,y), self.Board))
-                            for i in range(x+1):
-                                if self.Board[y][x-i][0] == 'b':
-                                    break
-                                elif self.Board[y][x-i][0] == 'w':
-                                    movimientos.append(Move((x,y), (x-i, y), self.Board))
-                                    break
-                                movimientos.append(Move((x,y), (x-i,y), self.Board))
-                            for i in range(fil - y):
-                                if self.Board[y+i][x][0] == 'b':
-                                    break
-                                elif self.Board[y+i][x][0] == 'w':
-                                    movimientos.append(Move((x,y), (x+i, y), self.Board))
-                                    break
-                                movimientos.append(Move((x,y), (x,y+i), self.Board))
-                            for i in range(y+1):
-                                if self.Board[y-i][x][0] == 'b':
-                                    break
-                                elif self.Board[y-i][x][0] == 'w':
-                                    movimientos.append(Move((x,y), (x, y-i), self.Board))
-                                    break
-                                movimientos.append(Move((x,y), (x,y-i), self.Board))
-                            for i in range(col-x):
-                                for j in range(y+1):
-                                    if self.Board[y-j][x+i][0] == 'b':
-                                        break
-                                    elif self.Board[y-j][x+i][0] == 'w':
-                                        movimientos.append(Move((x,y), (x+i, y-j), self.Board))
-                                        break
-                                    movimientos.append(Move((x,y), (x+i, y-j), self.Board))
-                            for i in range(col-x):
-                                for j in range(fil-y):
-                                    if self.Board[y+j][x+i][0] == 'b':
-                                        break
-                                    elif self.Board[y+j][x+i][0] == 'w':
-                                        movimientos.append(Move((x,y), (x+i, y+j), self.Board))
-                                        break
-                                    movimientos.append(Move((x,y), (x+i, y+j), self.Board))
-                            for i in range(x+1):
-                                for j in range(y+1):
-                                    if self.Board[y+j][x-i][0] == 'b':
-                                        break
-                                    elif self.Board[y+j][x-i][0] == 'w':
-                                        movimientos.append(Move((x,y), (x-i, y+j), self.Board))
-                                        break
-                                    movimientos.append(Move((x,y), (x-i, y+j), self.Board))
-                            for i in range(x+1):
-                                for j in range(fil-y):
-                                    if self.Board[y-j][x-i][0] == 'b':
-                                        break
-                                    elif self.Board[y-j][x-i][0] == 'w':
-                                        movimientos.append(Move((x,y), (x-i, y-j), self.Board))
-                                        break
-                                    movimientos.append(Move((x,y), (x-i, y-j), self.Board))
+                                
+                                movimientos.append(Move((x,y), (mov_x, mov_y), self.Board))
                     
                     elif pieza == 'K':
                         if x < col-1 and y > 1:
