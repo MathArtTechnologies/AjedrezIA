@@ -74,7 +74,33 @@ class GameState:
                             movimientos.append(Move((x,y), (x,y-i), self.Board))
                         
                     elif pieza == 'N':
-                        pass
+                        movimientos.append(Move((x,y), (x+2, y+1), self.Board))
+                        movimientos.append(Move((x,y), (x+2, y-1), self.Board))
+                        movimientos.append(Move((x,y), (x-2, y+1), self.Board))
+                        movimientos.append(Move((x,y), (x-2, y-1), self.Board))
+                        movimientos.append(Move((x,y), (x+1, y+2), self.Board))
+                        movimientos.append(Move((x,y), (x+1, y-2), self.Board))
+                        movimientos.append(Move((x,y), (x-1, y+2), self.Board))
+                        movimientos.append(Move((x,y), (x-1, y-2), self.Board))
+
+                        if x<2:
+                            if y==0:
+                                movimientos.pop()
+                            if y==7:
+                                movimientos.pop()
+                        if x>5:
+                            if(y==0):
+                                movimientos.pop()
+                            if(y==7):
+                                movimientos.pop()
+                        if y<2:
+                            
+                            movimientos.pop()
+                            movimientos.pop()
+                        if y>5:
+                            movimientos.pop()
+                            movimientos.pop()
+
                     elif pieza == 'B':
                         pass
                     elif pieza == 'Q':
