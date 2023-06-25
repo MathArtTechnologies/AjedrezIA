@@ -1,8 +1,6 @@
 import pygame
 import time
 
-
-
 col, fil = 8, 8
 cafe = (155, 103, 60)
 blanco = (200, 200, 200)
@@ -13,7 +11,6 @@ sqrs = ancho // col
 vent = pygame.display.set_mode((largo, ancho))
 clock = pygame.time.Clock()
 pygame.display.set_caption('Ajedrez Musical')
-
 
 class GameState:
     def __init__(self):
@@ -74,32 +71,33 @@ class GameState:
                             movimientos.append(Move((x,y), (x,y-i), self.Board))
                         
                     elif pieza == 'N':
-                        movimientos.append(Move((x,y), (x+2, y+1), self.Board))
-                        movimientos.append(Move((x,y), (x+2, y-1), self.Board))
-                        movimientos.append(Move((x,y), (x-2, y+1), self.Board))
-                        movimientos.append(Move((x,y), (x-2, y-1), self.Board))
-                        movimientos.append(Move((x,y), (x+1, y+2), self.Board))
-                        movimientos.append(Move((x,y), (x+1, y-2), self.Board))
-                        movimientos.append(Move((x,y), (x-1, y+2), self.Board))
-                        movimientos.append(Move((x,y), (x-1, y-2), self.Board))
+                        pass
+                        # movimientos.append(Move((x,y), (x+2, y+1), self.Board))
+                        # movimientos.append(Move((x,y), (x+2, y-1), self.Board))
+                        # movimientos.append(Move((x,y), (x-2, y+1), self.Board))
+                        # movimientos.append(Move((x,y), (x-2, y-1), self.Board))
+                        # movimientos.append(Move((x,y), (x+1, y+2), self.Board))
+                        # movimientos.append(Move((x,y), (x+1, y-2), self.Board))
+                        # movimientos.append(Move((x,y), (x-1, y+2), self.Board))
+                        # movimientos.append(Move((x,y), (x-1, y-2), self.Board))
 
-                        if x<2:
-                            if y==0:
-                                movimientos.pop()
-                            if y==7:
-                                movimientos.pop()
-                        if x>5:
-                            if(y==0):
-                                movimientos.pop()
-                            if(y==7):
-                                movimientos.pop()
-                        if y<2:
+                        # if x<2:
+                        #     if y==0:
+                        #         movimientos.pop()
+                        #     if y==7:
+                        #         movimientos.pop()
+                        # if x>5:
+                        #     if(y==0):
+                        #         movimientos.pop()
+                        #     if(y==7):
+                        #         movimientos.pop()
+                        # if y<2:
                             
-                            movimientos.pop()
-                            movimientos.pop()
-                        if y>5:
-                            movimientos.pop()
-                            movimientos.pop()
+                        #     movimientos.pop()
+                        #     movimientos.pop()
+                        # if y>5:
+                        #     movimientos.pop()
+                        #     movimientos.pop()
 
                     elif pieza == 'B':
                         pass
@@ -142,7 +140,37 @@ class Move:
     # def getNotes(self, start, end):
     #     return self.colsToNotes[]
 
-        
+class Button():
+    def __init__(self, x, y, image_path):
+        # self.__OnLeftClickHandlers = []
+        # self.__OnRightClickHandlers = [] #para futuro
+
+        self.image = pygame.image.load(image_path).convert_alpha()
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x,y)
+
+    def draw(self):
+        pos = pygame.mouse.get_pos();
+
+        mouseClick = False;
+
+        #event handler
+        if self.rect.collidepoint(pos):
+            print("hover")
+            if pygame.mouse.get_pressed()[0]:
+                # self.__handleEvent(self.__OnLeftClickHandlers);
+                # for handler in self.__OnLeftClickHandlers:
+                #     handler(self)
+                mouseClick = True;
+
+        vent.blit(self.image, (self.rect.x, self.rect.y))
+
+        return mouseClick
+
+    # def __handleEvent(self, *handlers):
+    #     for handler in handlers:
+    #         handler();        
+
 
 imagenes = {}
 def cargarImagenes():
@@ -198,6 +226,7 @@ def cargarSonidos():
 
 def main():
     done = False
+    showStartMenu = True
     board = GameState()
     pygame.init()
     moveMade = False
@@ -247,10 +276,12 @@ def main():
             validMoves = board.getValidMoves()
             moveMade = False
                     
+        if showStartMenu:
+            showStartMenu = not(drawStartMenu(vent))
+        else:
+            drawBoard(vent)
+            drawPieces(vent, board.Board)
 
-
-        drawBoard(vent)
-        drawPieces(vent, board.Board)
         clock.tick(15)
         pygame.display.flip()
 
@@ -270,6 +301,13 @@ def drawPieces(vent, board):
             if pieza != '++':
                 vent.blit(imagenes[pieza], pygame.Rect(c*sqrs, f*sqrs, sqrs, sqrs))
 
+def drawStartMenu(vent):
+    vent.fill(pygame.Color('steelblue4'))
+    btn_clasico = Button(156, 100, "Assets/Image/btn-clasico.png") 
+    # btn_clasico._Button__OnLeftClickHandlers.append(On_btn_clsico_click)
+    return btn_clasico.draw()
 
+# def On_btn_clsico_click(sender):
+#     showStartMenu = False
 
 main()
