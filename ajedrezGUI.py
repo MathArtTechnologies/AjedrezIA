@@ -42,20 +42,37 @@ class GameState:
 
     def getAllMoves(self):
         movimientos = []
-        for x in range(col):
-            for y in range(fil):
+        for y in range(fil):
+            for x in range(col):
                 color = self.Board[y][x][0]
                 if (color == 'w' and self.whiteToMove) or (color == 'b' and not self.whiteToMove):
                     pieza = self.Board[y][x][1]
                     if pieza == 'p':
-                        if color = 'w':
-                            if y == 7:
+                        if color == 'w':
+                            if y == 0:
                                 pass
-                            elif y==1:
+
+                            else:
+                                if self.Board[y-1][x] == '++':
+                                    movimientos.append(Move((x,y), (x,y-1), self.Board))
+                                if y == 6 and self.Board[y-2][x] == '++':
+                                    movimientos.append(Move((x,y), (x,y-2), self.Board))
+                                if x > 0 and self.Board[y-1][x-1][0] == 'b':
+                                    movimientos.append(Move((x,y), (x-1,y-1), self.Board))
+                                if x < 7 and self.Board[y-1][x+1][0] == 'b':
+                                    movimientos.append(Move((x,y), (x+1,y-1), self.Board))
                                 
 
                     elif pieza == 'R':
-                        pass
+                        for i in range(col - x):
+                            movimientos.append(Move((x,y), (x+i,y), self.Board))
+                        for i in range(x):
+                            movimientos.append(Move((x,y), (x-i,y), self.Board))
+                        for i in range(fil - y):
+                            movimientos.append(Move((x,y), (x,y+i), self.Board))
+                        for i in range(y):
+                            movimientos.append(Move((x,y), (x,y-i), self.Board))
+                        
                     elif pieza == 'N':
                         pass
                     elif pieza == 'B':
@@ -86,8 +103,8 @@ class Move:
         self.moveID = 1000*self.startX + 100*self.startY + 10*self.endX + self.endY
 
     def __eq__(self, other):
-        if isinstance(other, self):
-            return self.moveID == other.ID
+        if isinstance(other, Move):
+            return self.moveID == other.moveID
         return False 
     
     def getChessNotation(self):
@@ -185,11 +202,15 @@ def main():
 
                 if len(playerClicks) == 2:
                     move = Move(playerClicks[0], playerClicks[1], board.Board)
-                    # if move in validMoves:
-                    board.makeMove(move)
-                    cdSele = ()
-                    playerClicks = []
-                    moveMade = True
+                    if move in validMoves:
+                        board.makeMove(move)
+                        cdSele = ()
+                        playerClicks = []
+                        moveMade = True
+                    else:
+                        print('invalido')
+                        cdSele = ()
+                        playerClicks = []
             if key[pygame.K_LEFT]:
                 move = board.gameLog[-1]
                 board.undoMove(move)
