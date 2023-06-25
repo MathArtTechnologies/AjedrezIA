@@ -48,7 +48,12 @@ class GameState:
                 if (color == 'w' and self.whiteToMove) or (color == 'b' and not self.whiteToMove):
                     pieza = self.Board[y][x][1]
                     if pieza == 'p':
-                        pass
+                        if color = 'w':
+                            if y == 7:
+                                pass
+                            elif y==1:
+                                
+
                     elif pieza == 'R':
                         pass
                     elif pieza == 'N':
