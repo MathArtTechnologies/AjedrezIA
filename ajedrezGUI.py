@@ -24,18 +24,156 @@ class GameState:
                       ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
         self.whiteToMove = True
         self.gameLog = []
+        self.white_king_loc = (4, 7)
+        self.black_king_loc = (4, 0)
+        self.checkmate = False
+        self.stalemate = False
     
     def makeMove(self, move):
         self.Board[move.startY][move.startX] = '++'
         self.Board[move.endY][move.endX] = move.piezaMovio
         self.gameLog.append(move)
         self.whiteToMove = not self.whiteToMove
+        if move.piezaMovio == 'wK':
+            self.white_king_loc = (move.endX, move.endY)
+        elif move.piezaMovio == 'bK':
+            self.black_king_loc = (move.endX, move.endY)
 
     def undoMove(self, move):
         self.Board[move.startY][move.startX] = move.piezaMovio
         self.Board[move.endY][move.endX] = move.piezaCaptura
         self.gameLog.pop()
         self.whiteToMove = not self.whiteToMove
+        if move.piezaMovio == 'wK':
+            self.white_king_loc = (move.startX, move.startY)
+        elif move.piezaMovio == 'bK':
+            self.black_king_loc = (move.startX, move.startY)
+
+    def pawn_moves(self, x, y, moves):
+        if self.whiteToMove:
+            if y == 0:
+                pass
+
+            else:
+                if self.Board[y-1][x] == '++':
+                    moves.append(Move((x,y), (x,y-1), self.Board))
+                if y == 6 and self.Board[y-2][x] == '++':
+                    moves.append(Move((x,y), (x,y-2), self.Board))
+                if x > 0 and self.Board[y-1][x-1][0] == 'b':
+                    moves.append(Move((x,y), (x-1,y-1), self.Board))
+                if x < 7 and self.Board[y-1][x+1][0] == 'b':
+                    moves.append(Move((x,y), (x+1,y-1), self.Board))
+                                
+        if not self.whiteToMove:
+            if y == 7:
+                pass
+
+            else:
+                if self.Board[y+1][x] == '++':
+                    moves.append(Move((x,y), (x,y+1), self.Board))
+                if y == 1 and self.Board[y+2][x] == '++':
+                    moves.append(Move((x,y), (x,y+2), self.Board))
+                if x > 0 and self.Board[y+1][x-1][0] == 'w':
+                     moves.append(Move((x,y), (x+1,y+1), self.Board))
+                if x < 7 and self.Board[y+1][x+1][0] == 'w':
+                    moves.append(Move((x,y), (x+1,y+1), self.Board))
+
+    def rook_moves(self, x, y, moves, color):
+        directions = ((1,0), (0,-1), (-1,0), (0,1))
+
+        for direction in directions:
+            mov_x = x
+            mov_y = y
+            
+            diferencia_x = x + 1 if direction[0] == -1 else col-x 
+            diferencia_y = y + 1 if direction[1] == -1 else fil-y
+
+            diferencia = abs(diferencia_x * direction[0] + diferencia_y *direction[1]) 
+
+            for i in range(diferencia-1):
+                mov_x += direction[0]
+                mov_y += direction[1]
+
+                if self.Board[mov_y][mov_x] != '++':
+                    if self.Board[mov_y][mov_x][0] != color:
+                        moves.append(Move((x,y), (mov_x, mov_y), self.Board))
+                        break
+                    else:
+                        break
+                                
+                moves.append(Move((x,y), (mov_x, mov_y), self.Board))
+
+    def knight_moves(self, x, y, moves, color):
+        for i in range(col):
+            for j in range(fil):
+                if ((x-i)**2 + (y-j)**2) == 5:
+                    move = Move((x,y), (i,j), self.Board)
+                    if self.Board[j][i][0] != color:
+                        moves.append(move)
+
+    def bishop_moves(self, x, y, moves, color):
+        directions = ((1,1), (1,-1), (-1,-1), (-1,1))
+
+        for direction in directions:
+            mov_x = x
+            mov_y = y
+            
+            diferencia_x = x + 1 if direction[0] == -1 else col-x 
+            diferencia_y = y + 1 if direction[1] == -1 else fil-y
+
+            min_dif = min(diferencia_x, diferencia_y)
+                            
+            for i in range(min_dif-1):
+                mov_x += direction[0]
+                mov_y += direction[1]
+
+                if self.Board[mov_y][mov_x] != '++':
+                    if self.Board[mov_y][mov_x][0] != color:
+                        moves.append(Move((x,y), (mov_x, mov_y), self.Board))
+                        break
+                    else:
+                        break
+                moves.append(Move((x,y), (mov_x, mov_y), self.Board))
+
+    def queen_moves(self, x, y, moves, color):
+        directions = ((1,0), (0,-1), (-1,0), (0,1), (1,1), (1,-1), (-1,-1), (-1,1))
+
+        for direction in directions:
+            mov_x = x
+            mov_y = y
+                            
+            diferencia = 0
+            if(abs(direction[0] + direction[1]) == 1):
+                diferencia_x = x + 1 if direction[0] == -1 else col-x 
+                diferencia_y = y + 1 if direction[1] == -1 else fil-y
+                diferencia = abs(diferencia_x * direction[0] + diferencia_y *direction[1]) 
+            else:
+                diferencia_x = x + 1 if direction[0] == -1 else col-x 
+                diferencia_y = y + 1 if direction[1] == -1 else fil-y
+                diferencia = min(diferencia_x, diferencia_y)
+
+
+            for i in range(diferencia-1):
+                mov_x += direction[0]
+                mov_y += direction[1]
+
+                if self.Board[mov_y][mov_x] != '++':
+                    if self.Board[mov_y][mov_x][0] != color:
+                        moves.append(Move((x,y), (mov_x, mov_y), self.Board))
+                        break
+                    else:
+                        break
+                                
+                moves.append(Move((x,y), (mov_x, mov_y), self.Board))
+
+    def king_moves(self, x, y, moves, color):
+        for i in range(col):
+            for j in range(fil):
+                if ((x-i)**2 + (y-j)**2) <= 2:
+                    move = Move((x,y), (i,j), self.Board)
+                    if self.Board[j][i][0] != color:
+                        moves.append(move)
+                        
 
     def getAllMoves(self):
         movimientos = []
@@ -45,178 +183,52 @@ class GameState:
                 if (color == 'w' and self.whiteToMove) or (color == 'b' and not self.whiteToMove):
                     pieza = self.Board[y][x][1]
                     if pieza == 'p':
-                        if color == 'w':
-                            if y == 0:
-                                pass
-
-                            else:
-                                if self.Board[y-1][x] == '++':
-                                    movimientos.append(Move((x,y), (x,y-1), self.Board))
-                                if y == 6 and self.Board[y-2][x] == '++':
-                                    movimientos.append(Move((x,y), (x,y-2), self.Board))
-                                if x > 0 and self.Board[y-1][x-1][0] == 'b':
-                                    movimientos.append(Move((x,y), (x-1,y-1), self.Board))
-                                if x < 7 and self.Board[y-1][x+1][0] == 'b':
-                                    movimientos.append(Move((x,y), (x+1,y-1), self.Board))
-                                
-                        if color == 'b' and not self.whiteToMove:
-                            if y == 7:
-                                pass
-
-                            else:
-                                if self.Board[y+1][x] == '++':
-                                    movimientos.append(Move((x,y), (x,y+1), self.Board))
-                                if y == 1 and self.Board[y+2][x] == '++':
-                                    movimientos.append(Move((x,y), (x,y+2), self.Board))
-                                if x > 0 and self.Board[y+1][x-1][0] == 'w':
-                                    movimientos.append(Move((x,y), (x+1,y+1), self.Board))
-                                if x < 7 and self.Board[y+1][x+1][0] == 'w':
-                                    movimientos.append(Move((x,y), (x+1,y+1), self.Board))
+                        self.pawn_moves(x, y, movimientos)
 
                     elif pieza == 'R':
-                        directions = ((1,0), (0,-1), (-1,0), (0,1))
-
-                        for direction in directions:
-                            mov_x = x;
-                            mov_y = y;
-                            
-                            diferencia_x = x + 1 if direction[0] == -1 else col-x 
-                            diferencia_y = y + 1 if direction[1] == -1 else fil-y
-
-                            diferencia = abs(diferencia_x * direction[0] + diferencia_y *direction[1]) 
-
-                            for i in range(diferencia-1):
-                                mov_x += direction[0]
-                                mov_y += direction[1]
-
-                                if self.Board[mov_y][mov_x] != '++':
-                                    if self.Board[mov_y][mov_x][0] != color:
-                                        movimientos.append(Move((x,y), (mov_x, mov_y), self.Board))
-                                        break
-                                    else:
-                                        break
-                                
-                                movimientos.append(Move((x,y), (mov_x, mov_y), self.Board))
+                        self.rook_moves(x, y, movimientos, color)
                         
                     elif pieza == 'N':   
-                        if color == 'w' and self.whiteToMove:
-                            for i in range(col):
-                                for j in range(fil):
-                                    if ((x-i)**2 + (y-j)**2) == 5:
-                                        move = Move((x,y), (i,j), self.Board)
-                                        if self.Board[j][i] == '++' or self.Board[j][i][0] == 'b':
-                                            movimientos.append(move)
-                        elif color == 'b' and not self.whiteToMove:
-                            for i in range(col):
-                                for j in range(fil):
-                                    if ((x-i)**2 + (y-j)**2) == 5:
-                                        move = Move((x,y), (i,j), self.Board)
-                                        if self.Board[j][i] == '++' or self.Board[j][i][0] == 'w':
-                                            movimientos.append(move)
+                        self.knight_moves(x, y, movimientos, color)
 
                     elif pieza == 'B':
-                        directions = ((1,1), (1,-1), (-1,-1), (-1,1))
-
-                        for direction in directions:
-                            mov_x = x;
-                            mov_y = y;
-                            
-                            diferencia_x = x + 1 if direction[0] == -1 else col-x 
-                            diferencia_y = y + 1 if direction[1] == -1 else fil-y
-
-                            # diferencia_x = col-x 
-                            # diferencia_y = fil-y 
-
-                            # if(direction[0] == -1):
-                            #     diferencia_x = x + 1
-                            # if(direction[1] == -1):
-                            #     diferencia_y = y + 1
-
-
-
-                            min_dif = min(diferencia_x, diferencia_y)
-                            
-
-
-                            for i in range(min_dif-1):
-                                mov_x += direction[0]
-                                mov_y += direction[1]
-
-                                if self.Board[mov_y][mov_x] != '++':
-                                    if self.Board[mov_y][mov_x][0] != color:
-                                        movimientos.append(Move((x,y), (mov_x, mov_y), self.Board))
-                                        break
-                                    else:
-                                        break
-                                
-                                movimientos.append(Move((x,y), (mov_x, mov_y), self.Board))
+                       self.bishop_moves(x, y, movimientos, color)
                     
                     elif pieza == 'Q':
-                        directions = ((1,0), (0,-1), (-1,0), (0,1), (1,1), (1,-1), (-1,-1), (-1,1))
-
-                        for direction in directions:
-                            mov_x = x;
-                            mov_y = y;
-                            
-                            diferencia = 0
-                            if(abs(direction[0] + direction[1]) == 1):
-                                diferencia_x = x + 1 if direction[0] == -1 else col-x 
-                                diferencia_y = y + 1 if direction[1] == -1 else fil-y
-                                diferencia = abs(diferencia_x * direction[0] + diferencia_y *direction[1]) 
-                            else:
-                                diferencia_x = x + 1 if direction[0] == -1 else col-x 
-                                diferencia_y = y + 1 if direction[1] == -1 else fil-y
-                                diferencia = min(diferencia_x, diferencia_y)
-
-
-                            for i in range(diferencia-1):
-                                mov_x += direction[0]
-                                mov_y += direction[1]
-
-                                if self.Board[mov_y][mov_x] != '++':
-                                    if self.Board[mov_y][mov_x][0] != color:
-                                        movimientos.append(Move((x,y), (mov_x, mov_y), self.Board))
-                                        break
-                                    else:
-                                        break
-                                
-                                movimientos.append(Move((x,y), (mov_x, mov_y), self.Board))
+                        self.queen_moves(x, y, movimientos, color)
                     
                     elif pieza == 'K':
-                        if x < col-1 and y > 1:
-                            movimientos.append(Move((x,y), (x+1,y), self.Board))
-                            movimientos.append(Move((x,y), (x+1,y-1), self.Board))
-                            movimientos.append(Move((x,y), (x,y-1), self.Board))
-                        if x < col-1 and y < fil-1:
-                            movimientos.append(Move((x,y), (x+1,y), self.Board))
-                            movimientos.append(Move((x,y), (x+1,y+1), self.Board))
-                            movimientos.append(Move((x,y), (x,y+1), self.Board))
-                        if x > 1 and y > 1:
-                            movimientos.append(Move((x,y), (x-1,y), self.Board))
-                            movimientos.append(Move((x,y), (x-1,y-1), self.Board))
-                            movimientos.append(Move((x,y), (x,y-1), self.Board))
-                        if x > 1 and y < fil-1:
-                            movimientos.append(Move((x,y), (x-1,y), self.Board))
-                            movimientos.append(Move((x,y), (x-1,y+1), self.Board))
-                            movimientos.append(Move((x,y), (x,y+1), self.Board))
-                        if color == 'w' and self.whiteToMove:
-                            for i in range(col):
-                                for j in range(fil):
-                                    if ((x-i)**2 + (y-j)**2) <= 2:
-                                        move = Move((x,y), (i,j), self.Board)
-                                        if move in movimientos and self.Board[j][i][0] == 'w':
-                                            movimientos.remove(move)
-                        elif color == 'b' and not self.whiteToMove:
-                            for i in range(col):
-                                for j in range(fil):
-                                    if ((x-i)**2 + (y-j)**2) <= 2:
-                                        move = Move((x,y), (i,j), self.Board)
-                                        if move in movimientos and self.Board[j][i][0] == 'b':
-                                            movimientos.remove(move)
+                        self.king_moves(x, y, movimientos, color)
         return movimientos
+# estas checando tus movimientos
+# para cada movimiento lo haces
+# checas si estas en jaque
+# para checar si estas en jaque tienes que generar todos los movimientos del oponente
+
+    def in_attack(self, x, y):
+        moves = self.getAllMoves()
+        for move in moves:
+            if move.endX == x and move.endY == y:
+                return True
+        return False
+
+    def in_check(self):
+        if not self.whiteToMove: k_loc = self.white_king_loc 
+        else: k_loc = self.black_king_loc
+        return self.in_attack(k_loc[0], k_loc[1])
+
 
     def getValidMoves(self):
-        return self.getAllMoves()
+        movimientos = self.getAllMoves()
+        for i in range(len(movimientos)-1, -1, -1):
+            self.makeMove(movimientos[i])
+            if self.in_check():
+                print(movimientos[i].piezaMovio)
+                self.undoMove(movimientos[i])
+                movimientos.remove(movimientos[i])
+            else:
+                self.undoMove(movimientos[i])
+        return movimientos
 
 class Move:
 
@@ -258,9 +270,9 @@ class Button():
         self.rect.topleft = (x,y)
 
     def draw(self):
-        pos = pygame.mouse.get_pos();
+        pos = pygame.mouse.get_pos()
 
-        mouseClick = False;
+        mouseClick = False
 
         #event handler
         if self.rect.collidepoint(pos):
@@ -269,7 +281,7 @@ class Button():
                 # self.__handleEvent(self.__OnLeftClickHandlers);
                 # for handler in self.__OnLeftClickHandlers:
                 #     handler(self)
-                mouseClick = True;
+                mouseClick = True
 
         vent.blit(self.image, (self.rect.x, self.rect.y))
 
@@ -367,13 +379,12 @@ def main():
                     move = Move(playerClicks[0], playerClicks[1], board.Board)
                     if move in validMoves:
                         board.makeMove(move)
+                        print(board.whiteToMove)
                         cdSele = ()
                         playerClicks = []
                         moveMade = True
                     else:
-                        print('invalido')
-                        cdSele = ()
-                        playerClicks = []
+                        playerClicks = [cdSele]
             if key[pygame.K_LEFT]:
                 move = board.gameLog[-1]
                 board.undoMove(move)
